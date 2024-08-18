@@ -1,7 +1,7 @@
-import { createClient } from "@clickhouse/client";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { LogTable } from "~/components/ui/trace-table";
+import { LogTable } from "~/components/ui/tables";
 import { loggerProvider } from "~/instrumentation.node";
+import { clickhouse } from "~/server/clickhouse";
 
 export interface Logs {
   Timestamp: string;
@@ -23,16 +23,13 @@ export interface Logs {
 const logger = loggerProvider.getLogger("clickhouse");
 
 export default async function Page() {
-  const client = createClient({
-    database: "otel",
-  });
   logger.emit({
     severityText: "info",
     body: "this is a log body",
     attributes: { "log.type": "custom" },
   });
 
-  const resultSet = await client.query({
+  const resultSet = await clickhouse.query({
     query: "SELECT * FROM otel_logs ORDER BY Timestamp DESC",
     format: "JSONEachRow",
   });

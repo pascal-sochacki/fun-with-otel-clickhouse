@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
-import { type Span } from "~/app/page";
 import { Temporal } from "@js-temporal/polyfill";
+import { type Span } from "../page";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { AttributeTable } from "~/components/ui/tables";
 
 interface Node {
   value: Span;
@@ -67,11 +69,19 @@ function SpanDisplay(props: {
   const [open, setOpen] = useState(true);
   return (
     <>
-      <div
-        onClick={() => setOpen(!open)}
-        key={props.node.value.SpanId}
-        className="flex"
-      >
+      <div className="flex items-center">
+        <div className="w-4">
+          {props.node.children.length > 0 ? (
+            <Expandable
+              open={open}
+              onClick={() => {
+                setOpen(!open);
+              }}
+            />
+          ) : (
+            <></>
+          )}
+        </div>
         <div className="relative h-6 w-80">
           <SpanName depth={props.depth} node={props.node} />
         </div>
@@ -81,6 +91,7 @@ function SpanDisplay(props: {
           maxDuration={props.maxDuration}
         />
       </div>
+      <Attributes span={props.node.value} />
 
       {open ? (
         props.node.children.map((n) => (
@@ -97,6 +108,21 @@ function SpanDisplay(props: {
       )}
     </>
   );
+}
+
+function Attributes(props: { span: Span }) {
+  return (
+    <>
+      <AttributeTable span={props.span} />
+    </>
+  );
+}
+
+function Expandable(props: { open: boolean; onClick: () => void }) {
+  if (props.open) {
+    return <ChevronDownIcon onClick={props.onClick} />;
+  }
+  return <ChevronRightIcon onClick={props.onClick} />;
 }
 
 function SpanName(props: { depth: number; node: Node }) {
@@ -127,7 +153,7 @@ function SpanBar(props: {
   return (
     <div className="relative w-full">
       <div
-        className="absolute inset-y-1 rounded bg-blue-600"
+        className="absolute h-2 rounded bg-blue-600"
         ref={(node) => {
           if (node) {
             node.style.setProperty(

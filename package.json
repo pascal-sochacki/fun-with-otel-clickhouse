@@ -17,6 +17,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
     "@clickhouse/client": "^1.4.1",
+    "@heroicons/react": "^2.1.5",
     "@js-temporal/polyfill": "^0.4.4",
     "@libsql/client": "^0.6.0",
     "@opentelemetry/api": "^1.9.0",

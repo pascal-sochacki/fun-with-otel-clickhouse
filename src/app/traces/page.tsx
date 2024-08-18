@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { TraceTable } from "~/components/ui/trace-table";
-import { createClient } from "@clickhouse/client";
-import { loggerProvider } from "~/instrumentation.node";
 import { HTTP_TARGET } from "./const";
+import { clickhouse } from "~/server/clickhouse";
+import { TraceTable } from "~/components/ui/tables";
 
 export interface Span {
   Timestamp: string;
@@ -21,19 +20,14 @@ export interface Span {
   StatusCode: string;
   StatusMessage: string;
 }
-const logger = loggerProvider.getLogger("clickhouse");
 
 export default async function Home() {
-  const client = createClient({
-    database: "otel",
-  });
-  const resultSet = await client.query({
+  const resultSet = await clickhouse.query({
     query:
       "SELECT * FROM otel_traces WHERE ParentSpanId = '' AND Timestamp >= NOW() - INTERVAL 3 MINUTE ORDER BY Timestamp DESC",
     format: "JSONEachRow",
   });
   const dataset = await resultSet.json<Span>();
-  console.log(dataset[0]);
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">

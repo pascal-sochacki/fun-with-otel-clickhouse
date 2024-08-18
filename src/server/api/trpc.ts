@@ -7,6 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
+import { trace } from "@opentelemetry/api";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -84,21 +85,18 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
+const tracer = trace.getTracer("trpc");
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  const start = Date.now();
+  return tracer.startActiveSpan("trpc middleware", async (span) => {
+    span.setAttribute("trpc.path", path);
+    if (t._config.isDev) {
+      // artificial delay in dev
+      const waitMs = Math.floor(Math.random() * 400) + 100;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
 
-  if (t._config.isDev) {
-    // artificial delay in dev
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
-  }
-
-  const result = await next();
-
-  const end = Date.now();
-  console.log(`[TRPC] ${path} took ${end - start}ms to execute`);
-
-  return result;
+    return await next();
+  });
 });
 
 /**

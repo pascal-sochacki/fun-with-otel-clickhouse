@@ -14,8 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "./table";
-import { type Logs } from "~/app/logs/page";
 import Link from "next/link";
+import { type Logs } from "~/app/logs/page";
+import { type Span } from "~/app/traces/page";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -30,6 +31,41 @@ function Duration(props: { duration: number }) {
     return <> {props.duration / 1000} ns</>;
   }
   return <> {props.duration} ns</>;
+}
+export function AttributeTable(props: { span: Span }) {
+  const keys = Object.keys(props.span.SpanAttributes);
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="h-0 w-1/3 p-0">Key</TableHead>
+            <TableHead className="h-0 p-0">Value</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {keys.length ? (
+            keys
+              .sort((a, b) => a.localeCompare(b))
+              .map((row) => (
+                <TableRow key={row}>
+                  <TableCell className="p-0">{row}</TableCell>
+                  <TableCell className="p-0">
+                    {props.span.SpanAttributes[row]}
+                  </TableCell>
+                </TableRow>
+              ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={keys.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
 }
 
 export function LogTable(props: { dataset: Logs[] }) {

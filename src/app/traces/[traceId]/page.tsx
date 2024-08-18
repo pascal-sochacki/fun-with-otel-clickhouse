@@ -1,17 +1,14 @@
-import { createClient } from "@clickhouse/client";
-import { type Span } from "~/app/page";
 import TraceViewer from "./TraceView";
 import { Card, CardContent } from "~/components/ui/card";
+import { clickhouse } from "~/server/clickhouse";
+import { type Span } from "../page";
 
 export default async function Page({
   params,
 }: {
   params: { traceId: string };
 }) {
-  const client = createClient({
-    database: "otel",
-  });
-  const resultSet = await client.query({
+  const resultSet = await clickhouse.query({
     query: "SELECT * FROM otel_traces WHERE TraceId = {traceId: String}",
     query_params: {
       traceId: params.traceId,

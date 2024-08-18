@@ -1,7 +1,7 @@
-import { createClient } from "@clickhouse/client";
 import { metrics } from "@opentelemetry/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { SumChart } from "./SumChart";
+import { clickhouse } from "~/server/clickhouse";
 
 const meter = metrics.getMeter("clickhouse");
 const counter = meter.createCounter("clickhouse.metrics.opend");
@@ -13,22 +13,9 @@ interface SumMetric {
 }
 
 export default async function Page() {
-  const client = createClient({
-    database: "otel",
-  });
   counter.add(1);
-  const metrics = await client.query({
-    query: "SELECT * FROM otel_metrics_sum WHERE MetricName = 'calls'",
-    format: "JSONEachRow",
-  });
-  const metricsJson = await metrics.json();
-  console.log(
-    metricsJson
-      .map((m) => m.Attributes["status.code"])
-      .filter((s) => s !== "STATUS_CODE_UNSET"),
-  );
 
-  const resultSet = await client.query({
+  const resultSet = await clickhouse.query({
     query:
       "SELECT * FROM otel_metrics_sum WHERE MetricName = 'clickhouse.metrics.opend' ORDER BY TimeUnix ",
     format: "JSONEachRow",
