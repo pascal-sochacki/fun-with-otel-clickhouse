@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { HTTP_TARGET } from "./const";
 import { clickhouse } from "~/server/clickhouse";
 import { TraceTable } from "~/components/ui/tables";
+import { AttributeSelector } from "./AttributeSelector";
 
 export interface Span {
   Timestamp: string;
@@ -27,6 +28,7 @@ export default async function Home() {
       "SELECT * FROM otel_traces WHERE ParentSpanId = '' AND Timestamp >= NOW() - INTERVAL 3 MINUTE ORDER BY Timestamp DESC",
     format: "JSONEachRow",
   });
+
   const dataset = await resultSet.json<Span>();
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -39,6 +41,7 @@ export default async function Home() {
             <CardTitle>Newest Traces</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
+            <AttributeSelector />
             <TraceTable
               dataset={dataset.map((trace) => {
                 return {

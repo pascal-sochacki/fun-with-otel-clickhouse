@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { MainNav } from "~/components/ui/main-nav";
 import { UserNav } from "~/components/ui/user-nav";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "Clickhouse Demo",
@@ -27,7 +28,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-          {children}
+          <TRPCReactProvider>{children}</TRPCReactProvider>
         </main>
       </body>
     </html>

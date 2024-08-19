@@ -91,7 +91,7 @@ function SpanDisplay(props: {
           maxDuration={props.maxDuration}
         />
       </div>
-      <Attributes span={props.node.value} />
+      <Attributes span={props.node.value} open={false} />
 
       {open ? (
         props.node.children.map((n) => (
@@ -110,7 +110,10 @@ function SpanDisplay(props: {
   );
 }
 
-function Attributes(props: { span: Span }) {
+function Attributes(props: { span: Span; open: boolean }) {
+  if (!props.open) {
+    return <></>;
+  }
   return (
     <>
       <AttributeTable span={props.span} />
