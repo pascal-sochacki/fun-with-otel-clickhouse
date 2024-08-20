@@ -36,6 +36,7 @@ export function AttributeSelector(props: {
   function reset() {
     setSelectedValue(undefined);
     setSelectedKey(undefined);
+    props.setSelectedAttributes({ key: "", value: "" });
   }
   return (
     <div className="flex gap-2 p-2 pl-0">

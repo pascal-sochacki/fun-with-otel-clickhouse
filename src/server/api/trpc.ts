@@ -97,7 +97,9 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
       await new Promise((resolve) => setTimeout(resolve, waitMs));
     }
 
-    return await next();
+    const result = await next();
+    span.end();
+    return result;
   });
 });
 
