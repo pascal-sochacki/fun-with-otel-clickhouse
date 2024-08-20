@@ -1,8 +1,10 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { HTTP_TARGET } from "./const";
-import { clickhouse } from "~/server/clickhouse";
 import { TraceTable } from "~/components/ui/tables";
-import { AttributeSelector } from "./AttributeSelector";
+import { AttributeSelector, type KeyValue } from "./AttributeSelector";
+import { api } from "~/trpc/react";
+import React from "react";
 
 export interface Span {
   Timestamp: string;
@@ -22,14 +24,12 @@ export interface Span {
   StatusMessage: string;
 }
 
-export default async function Home() {
-  const resultSet = await clickhouse.query({
-    query:
-      "SELECT * FROM otel_traces WHERE ParentSpanId = '' AND Timestamp >= NOW() - INTERVAL 3 MINUTE ORDER BY Timestamp DESC",
-    format: "JSONEachRow",
+export default function Home() {
+  const [selectedAttributes, setSelectedAttributes] = React.useState<KeyValue>({
+    key: "",
+    value: "",
   });
-
-  const dataset = await resultSet.json<Span>();
+  const traces = api.traces.getTracesForAttribute.useQuery(selectedAttributes);
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -41,9 +41,9 @@ export default async function Home() {
             <CardTitle>Newest Traces</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <AttributeSelector />
+            <AttributeSelector setSelectedAttributes={setSelectedAttributes} />
             <TraceTable
-              dataset={dataset.map((trace) => {
+              dataset={(traces.data ?? []).map((trace) => {
                 return {
                   ...trace,
                   HttpRoute: trace.SpanAttributes[HTTP_TARGET] ?? "unkown",

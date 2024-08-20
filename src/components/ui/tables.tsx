@@ -116,7 +116,13 @@ export function TraceTable(props: {
         },
         { accessorKey: "SpanName", header: "Name" },
         { accessorKey: "Timestamp", header: "Timestamp" },
-        { accessorKey: "HttpRoute", header: "Route" },
+        {
+          accessorKey: "HttpRoute",
+          header: "Route",
+          cell(props) {
+            return <div> {props.row.original.HttpRoute.substring(0, 30)}</div>;
+          },
+        },
         {
           accessorKey: "Duration",
           header: "Duration",

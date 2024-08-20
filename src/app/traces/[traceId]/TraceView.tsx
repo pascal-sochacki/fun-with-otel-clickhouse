@@ -111,7 +111,7 @@ function SpanDisplay(props: {
 }
 
 function Attributes(props: { span: Span; open: boolean }) {
-  if (!props.open) {
+  if (props.open) {
     return <></>;
   }
   return (

@@ -19,13 +19,24 @@ import {
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
-export function AttributeSelector() {
+export interface KeyValue {
+  key: string;
+  value: string;
+}
+
+export function AttributeSelector(props: {
+  setSelectedAttributes: (args: KeyValue) => void;
+}) {
   const [selectedKey, setSelectedKey] = React.useState<string>();
   const [selectedValue, setSelectedValue] = React.useState<string>();
   const keys = api.traces.getAttributeKeys.useQuery();
   const values = api.traces.getAttributeValuesForKey.useQuery(
     selectedKey ?? "",
   );
+  function reset() {
+    setSelectedValue(undefined);
+    setSelectedKey(undefined);
+  }
   return (
     <div className="flex gap-2 p-2 pl-0">
       <ComboboxDemo
@@ -40,12 +51,22 @@ export function AttributeSelector() {
         value={selectedValue}
         setValue={setSelectedValue}
       />
-      <Button>OK</Button>
+      <Button
+        onClick={() => {
+          if (selectedKey && selectedValue) {
+            props.setSelectedAttributes({
+              key: selectedKey,
+              value: selectedValue,
+            });
+          }
+        }}
+      >
+        OK
+      </Button>
       <Button
         variant={"destructive"}
         onClick={() => {
-          setSelectedValue(undefined);
-          setSelectedKey(undefined);
+          reset();
         }}
       >
         Reset
