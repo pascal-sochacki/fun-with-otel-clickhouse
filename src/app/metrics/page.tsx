@@ -1,7 +1,7 @@
 import { metrics } from "@opentelemetry/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { SumChart } from "./SumChart";
 import { clickhouse } from "~/server/clickhouse";
+import HeatMap from "./HeatMap";
 
 const meter = metrics.getMeter("clickhouse");
 const counter = meter.createCounter("clickhouse.metrics.opend");
@@ -33,18 +33,7 @@ export default async function Page() {
           </CardHeader>
           <CardContent className="pl-2">
             <div>Works</div>
-
-            <SumChart
-              config={{
-                metric: {
-                  label: "Metric",
-                  color: "#2563eb",
-                },
-              }}
-              data={dataset.map((d) => {
-                return { metric: d.Value, time: new Date(d.TimeUnix) };
-              })}
-            />
+            <HeatMap width={400} height={200} events={true} />
           </CardContent>
         </Card>
       </div>
