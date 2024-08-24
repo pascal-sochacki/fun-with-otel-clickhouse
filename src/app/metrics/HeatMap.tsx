@@ -1,16 +1,16 @@
 "use client";
 import React from "react";
 import { Group } from "@visx/group";
-import { scaleLinear } from "@visx/scale";
+import { scaleLinear, scaleLog } from "@visx/scale";
 import { HeatmapRect } from "@visx/heatmap";
 
-interface Bins {
+export interface Bins {
   time: string;
   bins: Bin[];
 }
 
 interface Bin {
-  bin: string;
+  Lower: string;
   count: number;
 }
 const cool1 = "#122549";
@@ -28,6 +28,7 @@ const count = (d: Bin) => d.count;
 
 export type HeatmapProps = {
   width: number;
+  binData: Bins[];
   height: number;
   margin?: { top: number; right: number; bottom: number; left: number };
   separation?: number;
@@ -37,37 +38,13 @@ export type HeatmapProps = {
 const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
 
 function HeatMap({
+  binData,
   width,
   height,
   events = false,
   margin = defaultMargin,
 }: HeatmapProps) {
   // bounds
-
-  const binData: Bins[] = [
-    {
-      time: "gestern",
-      bins: [
-        { bin: "12", count: 1 },
-        { bin: "13", count: 1 },
-      ],
-    },
-    {
-      time: "heute",
-      bins: [
-        { bin: "12", count: 1 },
-        { bin: "13", count: 2 },
-      ],
-    },
-    {
-      time: "morgen",
-      bins: [
-        { bin: "14", count: 4 },
-        { bin: "12", count: 1 },
-        { bin: "13", count: 3 },
-      ],
-    },
-  ];
 
   const colorMax = max(binData, (d) => max(bins(d), count));
   const bucketSizeMax = max(binData, (d) => bins(d).length);
@@ -83,7 +60,7 @@ function HeatMap({
     range: [cool1, cool2],
     domain: [0, colorMax],
   });
-  const opacityScale = scaleLinear<number>({
+  const opacityScale = scaleLog<number>({
     range: [0.1, 1],
     domain: [0, colorMax],
   });
@@ -134,7 +111,8 @@ function HeatMap({
                     if (!events) return;
                     const time = bin.datum.time;
                     const count = bin.bin.count;
-                    alert(JSON.stringify({ time, count }));
+                    const lower = bin.bin.Lower;
+                    alert(JSON.stringify({ time, count, lower }));
                   }}
                 />
               )),

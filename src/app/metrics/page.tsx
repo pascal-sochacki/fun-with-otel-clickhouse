@@ -1,26 +1,27 @@
 import { metrics } from "@opentelemetry/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { clickhouse } from "~/server/clickhouse";
-import HeatMap from "./HeatMap";
+import HeatMap, { type Bins } from "./HeatMap";
+import { api } from "~/trpc/server";
 
 const meter = metrics.getMeter("clickhouse");
 const counter = meter.createCounter("clickhouse.metrics.opend");
 
-interface SumMetric {
-  Value: number;
-  TimeUnix: string;
-  MetricName: string;
-}
-
 export default async function Page() {
   counter.add(1);
 
-  const resultSet = await clickhouse.query({
-    query:
-      "SELECT * FROM otel_metrics_sum WHERE MetricName = 'clickhouse.metrics.opend' ORDER BY TimeUnix ",
-    format: "JSONEachRow",
-  });
-  const dataset = await resultSet.json<SumMetric>();
+  const a = await api.metrics.createHeatMap();
+
+  const list: Bins[] = [];
+
+  for (const iterator of Object.keys(a)) {
+    console.log(iterator);
+    console.log(a[iterator]);
+    list.push({
+      time: iterator,
+      bins: a[iterator]!,
+    });
+  }
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -33,7 +34,7 @@ export default async function Page() {
           </CardHeader>
           <CardContent className="pl-2">
             <div>Works</div>
-            <HeatMap width={400} height={200} events={true} />
+            <HeatMap width={400} height={200} events={true} binData={list} />
           </CardContent>
         </Card>
       </div>
