@@ -6,6 +6,8 @@ import { type Metadata } from "next";
 import { MainNav } from "~/components/ui/main-nav";
 import { UserNav } from "~/components/ui/user-nav";
 import { TRPCReactProvider } from "~/trpc/react";
+import { getServerAuthSession } from "~/server/auth";
+import { LoginButton } from "~/components/LoginButton";
 
 export const metadata: Metadata = {
   title: "Clickhouse Demo",
@@ -13,19 +15,31 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getServerAuthSession();
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
         <main className="flex-col md:flex">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
-              <MainNav className="mx-6" />
-              <div className="ml-auto flex items-center space-x-4">
-                <UserNav />
-              </div>
+              {session != null ? (
+                <>
+                  <MainNav className="mx-6" />
+                  <div className="ml-auto flex items-center space-x-4">
+                    {" "}
+                    <UserNav />{" "}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="ml-auto flex items-center space-x-4">
+                    <LoginButton />
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <TRPCReactProvider>{children}</TRPCReactProvider>

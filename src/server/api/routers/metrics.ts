@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 export const metricsRouter = createTRPCRouter({
-  createHeatMap: publicProcedure
+  createHeatMap: protectedProcedure
     .output(
       z.record(
         z.string(),
