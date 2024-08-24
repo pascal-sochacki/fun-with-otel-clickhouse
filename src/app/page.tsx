@@ -1,3 +1,5 @@
+import { FeatureFlagExample } from "~/feature/Example";
+
 export default function Page() {
-  return <div>Main</div>;
+  return <FeatureFlagExample />;
 }

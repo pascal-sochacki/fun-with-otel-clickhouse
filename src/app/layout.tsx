@@ -8,6 +8,7 @@ import { UserNav } from "~/components/ui/user-nav";
 import { TRPCReactProvider } from "~/trpc/react";
 import { getServerAuthSession } from "~/server/auth";
 import { LoginButton } from "~/components/LoginButton";
+import { FeatureProvider } from "~/feature/FeatureProvider";
 
 export const metadata: Metadata = {
   title: "Clickhouse Demo",
@@ -42,7 +43,9 @@ export default async function RootLayout({
               )}
             </div>
           </div>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <FeatureProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </FeatureProvider>
         </main>
       </body>
     </html>
