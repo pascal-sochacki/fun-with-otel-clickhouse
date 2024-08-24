@@ -11,6 +11,7 @@
     "db:studio": "drizzle-kit studio",
     "dev": "next dev",
     "lint": "next lint",
+    "setup": "node ./scripts/setup.js",
     "start": "next start",
     "test": "jest"
   },
