@@ -8,7 +8,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
@@ -18,8 +17,11 @@ import {
   type CreateFeatureFlagType,
 } from "~/server/api/routers/types";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
+
   const form = useForm<CreateFeatureFlagType>({
     resolver: zodResolver(CreateFeatureFlagSchema),
     defaultValues: {},
@@ -32,33 +34,45 @@ export default function Page() {
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-7">
+      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
+        <div className="sm:hidden lg:block"></div>
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Create new Feature-Flag</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormDescription>
-                        This is your feature flag name.
-                      </FormDescription>
-                      <FormControl>
-                        <Input
-                          placeholder="example-feature-flag-name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit">Submit</Button>
+                <div className="flex flex-col gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormDescription>
+                          This is your feature flag name.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            placeholder="example-feature-flag-name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex flex-row-reverse gap-2">
+                    <Button type="submit">Submit</Button>
+                    <Button
+                      type="reset"
+                      variant="destructive"
+                      onClick={() => router.back()}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
               </form>
             </Form>
           </CardContent>

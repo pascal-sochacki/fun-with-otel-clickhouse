@@ -17,6 +17,9 @@ import {
 import Link from "next/link";
 import { type Logs } from "~/app/logs/page";
 import { type Span } from "~/app/traces/page";
+import { api, RouterOutputs } from "~/trpc/react";
+import { Switch } from "./switch";
+import { Button } from "./button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -65,6 +68,57 @@ export function AttributeTable(props: { span: Span }) {
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+export function FeatureFlagTable(props: {
+  dataset: RouterOutputs["feature"]["getAllFeatureFlag"];
+}) {
+  const context = api.useContext();
+  const mutation = api.feature.toggleFeatureFlag.useMutation({
+    onSuccess: () => context.feature.getAllFeatureFlag.invalidate(),
+  });
+  const deleteFlag = api.feature.deleteFeatureFlag.useMutation({
+    onSuccess: () => context.feature.getAllFeatureFlag.invalidate(),
+  });
+  return (
+    <DataTable
+      data={props.dataset}
+      columns={[
+        {
+          accessorKey: "name",
+          header: "Name",
+        },
+        {
+          accessorKey: "state",
+          header: "Enabled",
+          cell(props) {
+            return (
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={props.row.original.state == "ENABLED"}
+                  onCheckedChange={async (e) => {
+                    mutation.mutate({
+                      name: props.row.original.name,
+                      state: e ? "ENABLED" : "DISABLED",
+                    });
+                  }}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    deleteFlag.mutate(props.row.original.name);
+                  }}
+                >
+                  {" "}
+                  Delete
+                </Button>
+              </div>
+            );
+          },
+        },
+      ]}
+    />
   );
 }
 

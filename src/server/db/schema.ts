@@ -1,3 +1,4 @@
+import { JsonValue } from "@openfeature/react-sdk";
 import { relations, sql } from "drizzle-orm";
 import {
   index,
@@ -10,6 +11,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { Variants } from "~/app/api/feature/helperTypes";
 
 export const createTable = pgTableCreator((name) => `clickhouse_${name}`);
 
@@ -36,7 +38,14 @@ export const flags = createTable("flags", {
   defaultVariant: varchar("defaultVariant", {
     length: 255,
   }).notNull(),
-  variants: json("variants").notNull(),
+  variants: json("variants")
+    .$type<
+      | Variants<boolean>
+      | Variants<string>
+      | Variants<number>
+      | Variants<JsonValue>
+    >()
+    .notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

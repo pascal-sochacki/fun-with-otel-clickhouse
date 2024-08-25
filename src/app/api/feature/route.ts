@@ -1,16 +1,19 @@
+import { db } from "~/server/db";
 import { type Flag } from "./helperTypes";
+import { flags } from "~/server/db/schema";
 export async function GET(request: Request) {
-  const flags: Record<string, Flag> = {};
-  flags["new-message"] = {
-    state: "ENABLED",
-    variants: {
-      on: true,
-      off: false,
-    },
-    defaultVariant: "on",
-  };
+  const dbflags = await db.select().from(flags).orderBy(flags.name);
+  const flagsRecords: Record<string, Flag> = {};
+  for (const iterator of dbflags) {
+    flagsRecords[iterator.name] = {
+      defaultVariant: iterator.defaultVariant,
+      state: iterator.state,
+      variants: iterator.variants,
+    };
+  }
+  console.log(flagsRecords);
   return Response.json({
     $schema: "https://flagd.dev/schema/v0/flags.json",
-    flags: flags,
+    flags: flagsRecords,
   });
 }
