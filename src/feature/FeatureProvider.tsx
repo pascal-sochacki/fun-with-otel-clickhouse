@@ -1,22 +1,14 @@
 "use client";
-import {
-  OpenFeatureProvider,
-  OpenFeature,
-  InMemoryProvider,
-} from "@openfeature/react-sdk";
+import { OpenFeatureProvider, OpenFeature } from "@openfeature/react-sdk";
+import { FlagdWebProvider } from "@openfeature/flagd-web-provider";
 
-const flagConfig = {
-  "new-message": {
-    disabled: false,
-    variants: {
-      on: true,
-      off: false,
-    },
-    defaultVariant: "off",
-  },
-};
-
-OpenFeature.setProvider(new InMemoryProvider(flagConfig));
+OpenFeature.setProvider(
+  new FlagdWebProvider({
+    host: "localhost",
+    port: 8013,
+    tls: false,
+  }),
+);
 
 export function FeatureProvider(props: { children: React.ReactNode }) {
   return <OpenFeatureProvider>{props.children}</OpenFeatureProvider>;
