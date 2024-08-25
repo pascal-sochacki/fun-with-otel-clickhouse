@@ -1,0 +1,1 @@
+ALTER TABLE "clickhouse_flags" DROP COLUMN IF EXISTS "test";

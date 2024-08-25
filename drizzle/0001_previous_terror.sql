@@ -1,0 +1,1 @@
+ALTER TABLE "clickhouse_flags" ADD COLUMN "test" varchar(255) NOT NULL;

@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
+  json,
   pgTableCreator,
   primaryKey,
   text,
@@ -24,6 +25,18 @@ export const users = createTable("user", {
     withTimezone: true,
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
+});
+
+export const flags = createTable("flags", {
+  name: varchar("name", { length: 255 }).notNull().primaryKey(),
+  state: varchar("state", {
+    length: 255,
+    enum: ["ENABLED", "DISABLED"],
+  }).notNull(),
+  defaultVariant: varchar("defaultVariant", {
+    length: 255,
+  }).notNull(),
+  variants: json("variants").notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

@@ -13,6 +13,13 @@ CREATE TABLE IF NOT EXISTS "clickhouse_account" (
 	CONSTRAINT "clickhouse_account_provider_provider_account_id_pk" PRIMARY KEY("provider","provider_account_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "clickhouse_flags" (
+	"name" varchar(255) PRIMARY KEY NOT NULL,
+	"state" varchar(255) NOT NULL,
+	"defaultVariant" varchar(255) NOT NULL,
+	"variants" json NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "clickhouse_session" (
 	"session_token" varchar(255) PRIMARY KEY NOT NULL,
 	"user_id" varchar(255) NOT NULL,
@@ -46,5 +53,5 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "account_user_id_idx" ON "clickhouse_account" ("user_id");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "session_user_id_idx" ON "clickhouse_session" ("user_id");
+CREATE INDEX IF NOT EXISTS "account_user_id_idx" ON "clickhouse_account" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "session_user_id_idx" ON "clickhouse_session" USING btree ("user_id");

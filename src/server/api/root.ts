@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { traceRouter } from "./routers/traces";
 import { metricsRouter } from "./routers/metrics";
+import { featureRouter } from "./routers/feature";
 
 /**
  * This is the primary router for your server.
@@ -9,6 +10,7 @@ import { metricsRouter } from "./routers/metrics";
  */
 export const appRouter = createTRPCRouter({
   metrics: metricsRouter,
+  feature: featureRouter,
   traces: traceRouter,
 });
 
